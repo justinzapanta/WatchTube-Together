@@ -1,0 +1,123 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+<body class="bg-gray-900 text-white">
+    <div id="room" video_id="{{video_id}}" class="flex flex-col lg:flex-row h-screen">
+        <!-- Main Content Area -->
+        <div class="w-full lg:w-3/4 p-4 pt-2 lg:p-6 lg:pt-4">
+            <div class="w-full h-10 mb-4 grid grid-cols-2">
+                <div class="w-fit">
+                    <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
+                        <img src="{% static 'img/yt-icon.png' %}" class="h-9" alt="Flowbite Logo" />
+                        <span class="self-center text-lg font-semibold whitespace-nowrap text-white">YT-Together</span>
+                    </a>
+                </div>
+
+                <!--Search-->
+                <div class="relative w-full flex justify-end">
+                    <input id="search_1" name="search" type="text" class="pl-4 pr-10 border text-white h-9 w-96 rounded-md bg-gray-700 border-gray-600 focus:ring-white" placeholder="Search">
+                    <button onclick="search('search_1')" type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-400">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Video Player -->
+                <div class="relative w-full rounded-xl overflow-hidden shadow-lg" style="padding-top: 56.25%;">
+                    <div id="player" class="absolute top-0 left-0 w-full h-full bg-gray-800 flex items-center justify-center">
+                        <span class="text-gray-400">
+                            <i class="fas fa-spinner fa-spin fa-3x"></i>
+                        </span>
+                    </div>
+                </div>
+
+            <!-- Video Info -->
+            <div class="mt-6 bg-gray-800 rounded-xl p-4 shadow-lg">
+                <h2 class="text-2xl font-bold">Video Title</h2>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="w-full lg:w-1/4 h-full bg-gray-800 p-4 lg:p-6 flex flex-col ">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Watch Party</h3>
+                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition duration-300">
+                    Invite
+                </button>
+            </div>
+
+            <!-- Participants -->
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold mb-3">Participants</h4>
+                <div class="flex flex-wrap gap-2">
+                    <div class="bg-gray-700 rounded-full p-2 flex items-center space-x-2">
+                        <img src="/placeholder.svg?height=32&width=32" alt="User 1" class="w-8 h-8 rounded-full">
+                        <span>User 1</span>
+                    </div>
+                    <div class="bg-gray-700 rounded-full p-2 flex items-center space-x-2">
+                        <img src="/placeholder.svg?height=32&width=32" alt="User 2" class="w-8 h-8 rounded-full">
+                        <span>User 2</span>
+                    </div>
+                    <!-- Add more participants as needed -->
+                </div>
+            </div>
+
+            <!-- Chat -->
+            <h4 class="text-lg font-semibold mb-3">Chat</h4>
+            <div class="flex-1 overflow-y-auto pb-4">
+                <div class="">
+                    <div class="space-y-4 mb-4 overflow-y-auto">
+                        <!--Messages-->
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 mt-4">
+                <input type="text" placeholder="Type a message..." class="flex-grow bg-gray-700 text-white rounded-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 transition duration-300">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!--Search Result Modal-->
+    <div id="search_modal" class="w-96 fixed hidden top-0 px-4 left-0 h-screen overflow-y-auto bg-gray-800 shadow-2xl border border-gray-900 rounded-r-2xl z-50">
+        <div class="w-full flex justify-end mt-2">
+            <a onclick="display_modal('search_modal')" class="text-white font-semibold hover:cursor-pointer">X</a>
+        </div>
+
+        <div class="w-full mt-4 flex relative">
+            <input id="search_2" name="search" type="text" class="pl-4 pr-10 border text-white h-9 w-96 rounded-md bg-gray-700 border-gray-600 focus:ring-white" placeholder="Search">
+            <button onclick="search('search_2')" type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-400">
+                <i class="fas fa-search text-gray-400"></i>
+            </button>
+        </div>
+
+        <!--results-->
+        <div id="result_div" class="w-full flex-col gap-y-5">
+            <div class="w-full flex flex-col">
+                <!-- <div class="w-full h-44 bg-black">
+                    <img src="" class="w-full h-44 object-cover object-center" alt="">
+                </div>
+                <div class="px-2 mt-0.5">
+                    <h1 class="line-clamp-2 text-sm">Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur voluptatibus officia perferendis, possimus, cumque veritatis ullam quisquam itaque unde minus ab voluptas modi, aliquam odio ea doloribus eaque quas magnam.</h1>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="{% static 'js/room.js' %}"></script>
+</body>
+</html>

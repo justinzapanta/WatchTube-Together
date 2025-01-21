@@ -1,0 +1,59 @@
+{% extends 'main/base/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="w-full h-screen flex">
+        <div class="w-80 h-full font-roboto border-r border-r-gray-800 bg-gray-800 pt-20 px-2">
+            <h1 class="text-white font-semibold text-xl">Friends</h1>
+            <!--Friends container-->
+            <div class="flex flex-col mt-6 pl-2 gap-y-8">
+                <!--Friend Card-->
+                <div class="w-full flex gap-x-4">
+                    <!--Friend Image-->
+                    <div class="w-11 h-11 rounded-full bg-white"></div>
+
+                    
+                    <div class="flex flex-col font-roboto text-white">
+                        <!--Friend name-->
+                        <h1>Justin Zapanta</h1>
+                        
+                        <!--Status-->
+                        <div class="flex gap-x-1">
+                            <div class="my-auto">
+                                <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                            </div>
+                            <h3 class="text-sm text-emerald-500">Online</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full md:px-7 lg-px10 pt-24 flex flex-col overflow-y-auto">
+            <div class="w-full flex font-roboto gap-x-2">
+                <h1 class="font-semibold text-white text-2xl">Youtube Result</h1>
+            </div>
+
+            <!--Youtube results-->
+            <div class="w-full flex mt-6 pl-4 gap-y-7 flex-col">
+                {% if results %}
+                    {% for result in results %}
+                        <div class="w-full flex gap-x-6">
+                            <a href="/room/{{result.id}}/123" class="min-w-96 min-h-52 rounded-lg">
+                                <img class="object-cover w-96 h-52 rounded-lg" src="{{result.image}}" alt="">
+                            </a>
+
+                            <div class="flex flex-col w-[40rem] py-4 gap-y-3">
+                                <div>
+                                    <h1 class="font-roboto font-semibold text-white">{{result.title}}</h1>
+                                    <h4 class="font-roboto text-sm text-white">{{result.view_count}} views</h4>
+                                </div>
+                                <h3 class="font-roboto font-semibold text-sm text-white">{{result.channel_title}}</h3>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
