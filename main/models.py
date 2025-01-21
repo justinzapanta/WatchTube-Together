@@ -9,6 +9,9 @@ class UserProfile(models.Model):
     user_picture = models.TextField()
     user_status = models.CharField(max_length=50, default='Online')
 
+    def __str__(self):
+        return self.user_auth_credential.username
+
 
 class Room(models.Model):
     room_uuid = models.UUIDField(default=uuid.uuid4, primary_key=True, null=False, unique=True, editable=False )
@@ -16,6 +19,13 @@ class Room(models.Model):
     room_video_id = models.CharField(max_length=250, null=True, default='')
     room_owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     room_visitor = models.JSONField(null=True)
+
+
+class ChatRoom(models.Model):
+    chat_uuid = models.UUIDField(default=uuid.uuid4, primary_key=True, null=False, unique=True, editable=False )
+    chat_room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    chat_sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    chat_message = models.TextField()
 
 
 class Friend(models.Model):

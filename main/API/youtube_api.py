@@ -45,6 +45,7 @@ class YoutubeAPI:
 
         video_ids = ''
 
+
         for items in search_json['items']:
             if 'videoId' in items['id']:
                 video_ids += f'{items['id']['videoId']},'

@@ -12,12 +12,24 @@ def room(request):
         room = Room.objects.filter(room_owner = user)
 
         if request.method == 'GET':
-            pass
+            if request.query_params:
+                code = request.query_params['code']
+                room = Room.objects.filter(room_code = code)
+                if room:
+                    room_visitors = room[0].room_visitor
+                    room_visitors['result'].append({'username' : request.user.username})
+                    room.update(
+                        room_visitor = room_visitors
+                    )
+                    return Response({'result' : {
+                        'room_code' : room[0].room_code,
+                        'video_id' : room[0].room_video_id
+                    }})
+                return Response({'result' : 'Invalid Code'})
 
         elif request.method == 'POST':
             if request.data.get('create'):
                 if room:
-                    print(request.data)
                     id = ''
                     if request.data.get('video_id'):
                         id = request.data['video_id']
@@ -25,9 +37,9 @@ def room(request):
                     room.update(
                         room_video_id = id,
                         room_code = code,
-                        room_visitor = {'result' : {
+                        room_visitor = {'result' : [{
                             'username' : request.user.username
-                        }},
+                        }]},
                     )
 
                     return Response({'result' : {

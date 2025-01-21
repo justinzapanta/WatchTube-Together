@@ -35,6 +35,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,8 +45,9 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
 
     'rest_framework',
-    'channels',
 ]
+
+ASGI_APPLICATION = "YT_Together.asgi.application"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -84,7 +86,7 @@ WSGI_APPLICATION = 'YT_Together.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'YT-Together',
+        'NAME': 'watch_together_0mh4', #YT-Together
         'USER' : os.getenv('POSTGRESQL_USER'),
         'PASSWORD' : os.getenv('POSTGRESQL_PASSWORD'),
         'HOST' : os.getenv('POSTGRESQL_HOST'),

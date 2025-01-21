@@ -83,13 +83,14 @@
                         <h1 class="text-white text-xl">Join Room</h1>
 
                         <div class="mt-4 w-full">
+                            <h1 id="notif" class="text-red-400 text-sm text-center hidden">Invalid Code</h1>
                             <h1 class="font-roboto text-white text-sm">Enter Code</h1>
-                            <input type="text" class="border w-full h-10 rounded-md mt-1">
+                            <input id="code_input" type="text" class="border w-full h-10 rounded-md mt-1">
                         </div>
 
                         <div class="w-full flex justify-end mt-5 gap-x-4">
                             <button onclick="display_modal('join-modal')" class="font-semibold font-roboto px-8 py-2 bg-white hover:bg-gray-300 rounded-lg">Close</button>
-                            <button class="text-white font-semibold font-roboto px-10 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg">Join</button>
+                            <button onclick="join_room()" class="text-white font-semibold font-roboto px-10 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg">Join</button>
                         </div>
                     </div>
                 </div>

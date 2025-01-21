@@ -38,3 +38,25 @@ async function create_room(with_videoID=false){
         }
     }
 }
+
+
+async function join_room(){
+    const code = document.getElementById('code_input').value
+    const response = await fetch(`/api/room?code=${code}`, {
+        method : 'GET',
+        headers : {
+            'Content-Type' : 'application/json',
+        },
+    })
+
+    const res_json = await response.json()
+    const result = res_json.result
+
+    if (res_json.result !== 'Invalid Code'){
+        window.location.href = `/room/${result.room_code}/${result.video_id}`
+    }else if(res_json.result === 'Invalid Code'){
+        document.getElementById('notif').classList.remove('hidden')
+    }else{
+        
+    }
+}
