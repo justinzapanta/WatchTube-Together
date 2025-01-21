@@ -39,7 +39,7 @@
                 {% if results %}
                     {% for result in results %}
                         <div class="w-full flex gap-x-6">
-                            <a href="/room/{{result.id}}/123" class="min-w-96 min-h-52 rounded-lg">
+                            <a onclick="create_room('{{result.id}}')" class="hover:cursor-pointer min-w-96 min-h-52 rounded-lg">
                                 <img class="object-cover w-96 h-52 rounded-lg" src="{{result.image}}" alt="">
                             </a>
 
@@ -56,4 +56,8 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'js/search.js' %}"></script>
 {% endblock %}

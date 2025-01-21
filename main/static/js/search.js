@@ -1,14 +1,3 @@
-function display_modal(id, display=false){
-    const modal = document.getElementById(id)
-
-    if (display){
-        modal.classList.remove('hidden')
-    }else{
-        modal.classList.add('hidden')
-    }
-}
-
-
 async function create_room(with_videoID=false){
     data = JSON.stringify({create : true})
     if (with_videoID){

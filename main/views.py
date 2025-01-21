@@ -15,9 +15,9 @@ def home(request):
 
 
 def search_result(request, search):
-    # youtube = YoutubeAPI()
-    # results = youtube.search(search)
-    return render(request, 'main/views/search.html', { 'results' : 'results'})
+    youtube = YoutubeAPI()
+    results = youtube.search(search)
+    return render(request, 'main/views/search.html', { 'results' : results})
 
 
 def room(request, code, video_id=False):

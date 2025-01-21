@@ -61,7 +61,7 @@
                     
                         <div class="grid mt-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {% for recommended in recommendations %}
-                                <a href="/room/{{recommended.id}}/123" class="flex flex-col rounded-lg hover:cursor-pointer">
+                                <a onclick="create_room('{{recommended.id}}')" class="flex flex-col rounded-lg hover:cursor-pointer">
                                     <div class="relative mb-2" style="padding-top: 56.25%;"> <!-- Aspect ratio of 16:9 -->
                                         <img src="{{recommended.image}}" class="absolute top-0 left-0 object-cover w-full h-full rounded-lg" alt="{{recommended.title}}">
                                     </div>

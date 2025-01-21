@@ -11,19 +11,29 @@ def room(request):
         user = UserProfile.objects.get(user_auth_credential = request.user)
         room = Room.objects.filter(room_owner = user)
 
-        if request.method == 'POST':
-            if request.data.get('video_id'):
-                pass
-            elif request.data.get('create'):
+        if request.method == 'GET':
+            pass
+
+        elif request.method == 'POST':
+            if request.data.get('create'):
                 if room:
+                    print(request.data)
+                    id = ''
+                    if request.data.get('video_id'):
+                        id = request.data['video_id']
+                        
                     room.update(
-                        room_video_id = '',
+                        room_video_id = id,
                         room_code = code,
                         room_visitor = {'result' : {
                             'username' : request.user.username
                         }},
                     )
-                    return Response({'result' : room[0].room_code})
+
+                    return Response({'result' : {
+                        'room_code' : room[0].room_code,
+                        'room_video_id' : room[0].room_video_id
+                    }})
                 
         elif request.method == 'PUT':
             if room:
