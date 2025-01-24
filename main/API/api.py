@@ -17,10 +17,22 @@ def room(request):
                 room = Room.objects.filter(room_code = code)
                 if room:
                     room_visitors = room[0].room_visitor
-                    room_visitors['result'].append({'username' : request.user.username})
-                    room.update(
-                        room_visitor = room_visitors
-                    )
+
+                    in_visitor = False
+                    for visitor in room_visitors['result']:
+                        if visitor['username'] == request.user.username:
+                            in_visitor = True
+
+                    if not in_visitor:
+                        room_visitors['result'].append({
+                            'username' : request.user.username,
+                            'user_image' : user.user_picture,
+                            'role' : 'visitor'
+                        })
+                        room.update(
+                            room_visitor = room_visitors
+                        )
+                        
                     return Response({'result' : {
                         'room_code' : room[0].room_code,
                         'video_id' : room[0].room_video_id
@@ -38,7 +50,9 @@ def room(request):
                         room_video_id = id,
                         room_code = code,
                         room_visitor = {'result' : [{
-                            'username' : request.user.username
+                            'username' : request.user.username,
+                            'user_image' : user.user_picture,
+                            'role' : 'owner'
                         }]},
                     )
 

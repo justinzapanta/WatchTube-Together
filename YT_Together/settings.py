@@ -29,13 +29,15 @@ SECRET_KEY = 'django-insecure-y+&gkk1_di7g3pxlul5tds@(vib3m0xqfo#cjg(m%b&n507*)r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.0.114']
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'channels',
+    'daphne',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,7 +49,6 @@ INSTALLED_APPS = [
     'rest_framework',
 ]
 
-ASGI_APPLICATION = "YT_Together.asgi.application"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -77,7 +78,14 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'YT_Together.wsgi.application'
+# WSGI_APPLICATION = 'YT_Together.wsgi.application'
+ASGI_APPLICATION = "YT_Together.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 
 # Database
@@ -86,7 +94,7 @@ WSGI_APPLICATION = 'YT_Together.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'watch_together_0mh4', #YT-Together
+        'NAME': 'YT-Together', #
         'USER' : os.getenv('POSTGRESQL_USER'),
         'PASSWORD' : os.getenv('POSTGRESQL_PASSWORD'),
         'HOST' : os.getenv('POSTGRESQL_HOST'),

@@ -4,6 +4,10 @@ const getCSRFToken = () => {
 }
 
 const id = document.getElementById('room').getAttribute('video_id')
+const room_code = document.getElementById('room').getAttribute('room_code')
+const owner = document.getElementById('room').getAttribute('owner')
+
+let player
 
 function onYouTubePlayerAPIReady() {
     player = new YT.Player('player', {
@@ -14,7 +18,7 @@ function onYouTubePlayerAPIReady() {
             'modestbranding': 1, // Less prominent YouTube logo
             'showinfo': 0,       // Deprecated but sometimes still effective
             'controls': 1,       // Show controls
-            'disablekb': 1       // Disable keyboard controls
+            'disablekb': 1,       // Disable keyboard controls
             },
         events : {
             onReady : on_player_ready,
@@ -26,33 +30,27 @@ function onYouTubePlayerAPIReady() {
 onYouTubePlayerAPIReady()
 
 function on_player_ready(event){
-    console.log('ready')
+    console.log('error')
+    event.target.mute()
+    event.target.playVideo()
 }
 
-current_time = 0
+let current_time = 0
+let action_name = ''
+
 function detect_changes(event){
     if (event.data === YT.PlayerState.PLAYING){
-        console.log(player.getCurrentTime())
+        current_time = player.getCurrentTime()
+        action_name = 'playing'
+        
+        action(current_time, action_name)
     }else if (event.data == YT.PlayerState.PAUSED){
         current_time = player.getCurrentTime()
-        console.log(current_time)
-    }else if (event.data == YT.PlayerState.CUED){
-        console.log('ewan')
+        action_name = 'paused'
+
+        action(current_time, action_name)
     }
 }
-
-const button_icon = document.getElementById('button_icon')
-
-function play_video(){
-    if (button_icon.classList.contains('fa-play')){
-        button_icon.classList.replace('fa-play', 'fa-pause')
-        player.playVideo()
-    }else{
-        button_icon.classList.replace('fa-pause', 'fa-play')
-        player.pauseVideo()
-    }
-}
-
 
 
 function display_modal(id, display=false){
@@ -113,5 +111,49 @@ async function selected_video(id){
     const res_json = await res.json()
     if (res_json.result !== 'error'){
         window.location.href = `/room/${res_json.result.room_code}/${res_json.result.room_video_id}`
+    }
+}
+
+
+let url = `ws://${window.location.host}/ws/room/${room_code}/`
+const web_socket = new WebSocket(url)
+
+web_socket.onopen = function() {
+    console.log("WebSocket connected!");
+};
+
+
+web_socket.onclose = function() {
+    console.log("WebSocket disconnected.");
+};
+
+
+
+function action(time, action){
+    if (owner === 'yes'){
+        player.unMute()
+        web_socket.send(JSON.stringify({
+            time : time,
+            room_code : room_code,
+            action : action
+        }))
+    }
+}
+
+
+web_socket.onmessage = (e) => {
+    data = JSON.parse(e.data)
+    if (owner !== 'yes'){
+        if (data['action'] === 'playing'){
+            player.seekTo(data['time'], true)
+            player.playVideo()
+
+        }else if (data['action'] === 'paused'){
+            player.pauseVideo()
+        }    
+    }
+
+    if (data['action'] === 'leave'){
+        console.log(data)
     }
 }
