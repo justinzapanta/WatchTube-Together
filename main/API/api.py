@@ -1,3 +1,4 @@
+from urllib import response
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .function import generate_code
@@ -77,5 +78,32 @@ def videos(request):
     if request.method == 'GET':
         if request.query_params:
             return Response({'result' : youtube.search(request.query_params['search'])})
+
+    return Response({'result' : 'error'})
+
+
+@api_view(['PUT', 'GET'])
+def visitor(request):
+    if request.user.is_authenticated:
+        if request.method == 'PUT':
+            if request.data:
+                room = Room.objects.get(room_code = request.data['room_code'])
+                visitors = room.room_visitor
+
+                for index, result in enumerate(visitors['result']):
+                    if request.data['user'] in result.values() and result['role'] == 'visitor':
+                        del visitors['result'][index]
+                        break
+
+                room.room_visitor = visitors
+                room.save()
+
+                return Response({'result' : room.room_visitor})
+        elif request.method == 'GET':
+            if request.query_params:
+                room = Room.objects.get(room_code = request.query_params['code'])
+
+                print(room)
+                return Response({'result' : room.room_visitor})
 
     return Response({'result' : 'error'})

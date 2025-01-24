@@ -11,13 +11,15 @@ def home(request):
         profile = UserProfile.objects.get(user_auth_credential = request.user)
         data['profile_picture'] = profile.user_picture
         
-    # if request.method == 'POST':
-    #     if request.POST['search'] != '':
-    #         return redirect('search', str(request.POST['search']).strip())
+    if request.method == 'POST':
+        if request.POST['search'] != '':
+            return redirect('search', str(request.POST['search']).strip())
 
-    # youtube = YoutubeAPI()
-    # recommendation_list = youtube.recommended()
-    return render(request, 'main/views/home.html', data) #{'recommendations' : recommendation_list}
+    youtube = YoutubeAPI()
+    recommendation_list = youtube.recommended()
+    data['recommendations'] = recommendation_list
+
+    return render(request, 'main/views/home.html', data) #
 
 
 def search_result(request, search):
@@ -32,11 +34,26 @@ def room(request, code, video_id=False):
         room = Room.objects.filter(room_code = code)
 
         if room:
+            visitors = room[0].room_visitor
+            user = UserProfile.objects.get(user_auth_credential = request.user)
+
+            for index, result in enumerate(visitors['result']):
+                if request.user.username not in result.values():
+                    visitors['result'].append({
+                        'username' : request.user.username,
+                        'user_image' : user.user_picture,
+                        'role' : 'visitor'
+                    })
+
+            room.update(
+                room_visitor = visitors
+            )
+
             data = {
                 'room' : room, 
                 'video_id' : video_id,
                 'room_code' : code,
-                'visitors' : room[0].room_visitor
+                'visitors' : room[0].room_visitor,
             }
 
             if request.user.username == room[0].room_owner.user_auth_credential.username:

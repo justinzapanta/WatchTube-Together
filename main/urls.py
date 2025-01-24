@@ -12,5 +12,6 @@ urlpatterns= [
 
     #API
     path('api/room', api.room, name='api-room'),
-    path('api/videos', api.videos, name='api-videos')
+    path('api/videos', api.videos, name='api-videos'),
+    path('api/room/visitor', api.visitor, name='visitor')
 ]
