@@ -2,7 +2,8 @@ from urllib import response
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .function import generate_code
-from ..models import Room, UserProfile
+from ..models import Room, UserProfile, ChatRoom
+from .serializer import ChatRoomSerializer
 from .youtube_api import YoutubeAPI
 
 @api_view(['POST', 'GET', 'PUT'])
@@ -16,24 +17,7 @@ def room(request):
             if request.query_params:
                 code = request.query_params['code']
                 room = Room.objects.filter(room_code = code)
-                if room:
-                    room_visitors = room[0].room_visitor
-
-                    in_visitor = False
-                    for visitor in room_visitors['result']:
-                        if visitor['username'] == request.user.username:
-                            in_visitor = True
-
-                    if not in_visitor:
-                        room_visitors['result'].append({
-                            'username' : request.user.username,
-                            'user_image' : user.user_picture,
-                            'role' : 'visitor'
-                        })
-                        room.update(
-                            room_visitor = room_visitors
-                        )
-                        
+                if room:                        
                     return Response({'result' : {
                         'room_code' : room[0].room_code,
                         'video_id' : room[0].room_video_id
@@ -43,6 +27,7 @@ def room(request):
         elif request.method == 'POST':
             if request.data.get('create'):
                 if room:
+                    chat_room = ChatRoom.objects.filter(chat_room = room[0]).delete()
                     id = ''
                     if request.data.get('video_id'):
                         id = request.data['video_id']
@@ -101,9 +86,27 @@ def visitor(request):
                 return Response({'result' : room.room_visitor})
         elif request.method == 'GET':
             if request.query_params:
-                room = Room.objects.get(room_code = request.query_params['code'])
+                room = Room.objects.filter(room_code = request.query_params['code'])
 
-                print(room)
-                return Response({'result' : room.room_visitor})
+                return Response({'result' : room[0].room_visitor})
+    return Response({'result' : 'error'})
+
+
+
+@api_view(['POST', 'PUT'])
+def messages(request):
+    if request.user.is_authenticated:
+        data = request.data
+        if request.method == 'POST':
+            room = Room.objects.filter(room_code = data['chat_code'])
+
+            if room:
+                data = request.data
+                message = ChatRoom(
+                    chat_room = room[0],
+                    chat_sender = data['chat_sender'],
+                    chat_message = data['chat_message']
+                )
+                message.save()
 
     return Response({'result' : 'error'})

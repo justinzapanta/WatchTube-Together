@@ -3,7 +3,7 @@
 
 {% block content %}
     <div class="w-full h-screen flex">
-        <div class="w-80 h-full font-roboto border-r border-r-gray-800 bg-gray-800 pt-20 px-2">
+        <div class="w-80 h-full hidden md:block font-roboto bg-gray-800 md:pt-20 px-2">
             <h1 class="text-white font-semibold text-xl">Friends</h1>
             <!--Friends container-->
             <div class="flex flex-col mt-6 pl-2 gap-y-8">
@@ -29,35 +29,36 @@
             </div>
         </div>
 
-        <div class="w-full md:px-7 lg-px10 pt-24 flex flex-col relative">
+        <div class="w-full md:px-7 lg-px10 pt-14 md:pt-24 flex flex-col relative">
             <!--Hero-->
-            <div class="bg-gray-800 w-full h-96 font-roboto  rounded-2xl grid grid-cols-2">
-                <div class="w-full h-full flex flex-col justify-center px-6">
-                    <h1 class="text-white text-4xl text-center font-semibold">Watch <span class="">Youtube</span> Together</h1>
+            <div class="bg-gray-800 w-full h-72 min-h-72 font-roboto  md:rounded-2xl grid grid-cols-1 md:grid-cols-2">
+                <div class="w-full h-full flex flex-col justify-center px-6 z-30">
+                    <h1 class="text-white text-3xl md:text-4xl text-center font-semibold">Watch <span class="">Youtube</span> Together</h1>
 
                     <div class="flex justify-center mt-8">
                         <div class="flex gap-x-6">
-                            <button onclick="display_modal('join-modal', 'true')" class=" text-lg font-semibold px-14 py-2.5 rounded-xl bg-white hover:bg-gray-200">Join</button>
-                            <button onclick="create_room()" class="text-white text-lg font-semibold px-14 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700">Create</button>
+                            <button onclick="display_modal('join-modal', 'true')" class=" text-lg font-semibold px-8 py-2.5 rounded-xl bg-white hover:bg-gray-200">Join</button>
+                            <button onclick="create_room()" class="text-white text-lg font-semibold px-8 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700">Create</button>
                         </div>
                     </div>
                 </div>
 
                 <!--Image-->
-                <div class="w-full h-full flex flex-col justify-center">
+                <div class="w-full h-full  flex-col justify-center hidden md:flex">
                     <div class="w-full flex justify-center">
-                        <!--Put image here-->
+                        <img src="{% static 'img/tv.png' %}" class="h-80 min-h-80 min-w-80" alt="">
                     </div>
                 </div>
             </div>
 
             <!--Trending-->
             <div class="w-full mt-10">
-                <h1 class="text-white font-roboto font-semibold text-2xl">Trending Now</h1>
+                <div class="px-2 md:px-0">
+                    <h1 class="text-white font-roboto font-semibold text-lg md:text-2xl">Trending Now</h1>
+                </div>
 
-                <div class="w-full bg-gray-800 mt-4 rounded-2xl px-6 py-4">
+                <div class="w-full bg-gray-800 mt-2 md:rounded-2xl px-3 py-3 md:px-6 md:py-4">
                     <div class="w-full bg-gray-800 rounded-xl">
-                        <h1 class="font-roboto font-semibold text-2xl text-white">Trending Now</h1>
                     
                         <div class="grid mt-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {% for recommended in recommendations %}
@@ -65,7 +66,7 @@
                                     <div class="relative mb-2" style="padding-top: 56.25%;"> <!-- Aspect ratio of 16:9 -->
                                         <img src="{{recommended.image}}" class="absolute top-0 left-0 object-cover w-full h-full rounded-lg" alt="{{recommended.title}}">
                                     </div>
-                                    <h2 class="text-center mt-2  text-white line-clamp-2 overflow-hidden">
+                                    <h2 class="text-center mt-2 md:text-base text-sm  text-white line-clamp-2 overflow-hidden">
                                         {{recommended.title}}
                                     </h2>
                                 </a>
@@ -79,7 +80,7 @@
             <!--Join Modal-->
             <div id="join-modal" class="w-full h-full flex hidden flex-col justify-center absolute top-0 left-0">
                 <div class="w-full flex justify-center">
-                    <div class="w-96 font-roboto px-4 py-6 bg-gray-800 shadow-2xl border border-gray-900 rounded-xl">
+                    <div class="w-72 md:w-96 font-roboto px-4 py-6 border border-gray-900 shadow-2xl bg-gray-800 shadow-2xl rounded-xl">
                         <h1 class="text-white text-xl">Join Room</h1>
 
                         <div class="mt-4 w-full">
@@ -90,7 +91,7 @@
 
                         <div class="w-full flex justify-end mt-5 gap-x-4">
                             <button onclick="display_modal('join-modal')" class="font-semibold font-roboto px-8 py-2 bg-white hover:bg-gray-300 rounded-lg">Close</button>
-                            <button onclick="join_room()" class="text-white font-semibold font-roboto px-10 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg">Join</button>
+                            <button onclick="join_room()" class="text-white font-semibold font-roboto px-8 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg">Join</button>
                         </div>
                     </div>
                 </div>

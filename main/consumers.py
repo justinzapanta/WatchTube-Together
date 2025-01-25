@@ -1,6 +1,7 @@
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from .models import Room, UserProfile
+from django.contrib.auth.models import User
 import json
 
 
@@ -38,7 +39,10 @@ class YoutubePlayer(WebsocketConsumer):
                 self.roon_name,
                 {
                     'type' : 'new_visitor',
-                    'user' : self.user.username
+                    'data' : {
+                        'username' : data['username'],
+                        'room_code' : data['room_code']
+                    }
                 }
             )
         elif data['action'] == 'message':
@@ -47,6 +51,14 @@ class YoutubePlayer(WebsocketConsumer):
                 {
                     'type' : 'send_message',
                     'data' : data
+                }
+            )
+        elif data['action'] == 'change_video':
+            async_to_sync(self.channel_layer.group_send)(
+                self.roon_name,
+                {
+                    'type' : 'change_video',
+                    'video_id' : data['video_id']
                 }
             )
         else:
@@ -79,9 +91,32 @@ class YoutubePlayer(WebsocketConsumer):
 
     
     def new_visitor(self, event):
+        data = event['data']
+        room = Room.objects.filter(room_code = data['room_code'])
+        user_profile = User.objects.get(username = data['username'])
+        user = UserProfile.objects.get(user_auth_credential = user_profile)
+
+        visitors = room[0].room_visitor
+        is_unique = True
+        for result in visitors['result']:
+            if data['username'] == result['username']:
+                is_unique = False
+                break
+        
+        if is_unique:
+            visitors['result'].append({
+                'username' : data['username'],
+                'user_image' : user.user_picture,
+                'role' : 'visitor'
+            })
+
+            room.update(
+                room_visitor = visitors
+            )
+
         self.send(text_data=json.dumps({
             'action' : 'new_visitor',
-            'user' : event['user']
+            'user' : data['username']
         }))
     
 
@@ -92,4 +127,13 @@ class YoutubePlayer(WebsocketConsumer):
             'action' : 'message',
             'sender' : info['sender'],
             'message' : info['message']
+        }))
+
+
+    def change_video(self, event):
+        video_id = event['video_id']
+
+        self.send(text_data=json.dumps({
+            'action' : 'change_video',
+            'video_id' : video_id
         }))

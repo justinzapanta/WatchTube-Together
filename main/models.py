@@ -24,7 +24,7 @@ class Room(models.Model):
 class ChatRoom(models.Model):
     chat_uuid = models.UUIDField(default=uuid.uuid4, primary_key=True, null=False, unique=True, editable=False )
     chat_room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    chat_sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    chat_sender = models.CharField(max_length=250)
     chat_message = models.TextField()
 
 

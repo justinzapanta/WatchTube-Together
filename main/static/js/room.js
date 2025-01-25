@@ -123,6 +123,11 @@ async function selected_video(id){
     if (res_json.result !== 'error'){
         window.location.href = `/room/${res_json.result.room_code}/${res_json.result.room_video_id}`
     }
+
+    web_socket.send(JSON.stringify({
+        action : 'change_video',
+        video_id : res_json.result.room_video_id
+    }))
 }
 
 
@@ -130,7 +135,9 @@ web_socket.onopen = function() {
     console.log("WebSocket connected!");
 
     web_socket.send(JSON.stringify({
-        action : 'new_visitor'
+        action : 'new_visitor',
+        username : username,
+        room_code : room_code
     }))
 };
 
@@ -151,6 +158,7 @@ function action(time, action){
         }))
     }
 }
+
 
 
 web_socket.onmessage = async (e) => {
@@ -190,6 +198,7 @@ web_socket.onmessage = async (e) => {
 
         console.log(results)
         update_participants(results['result'])
+        console.log('bumalik')
     }
 
     // message
@@ -198,11 +207,18 @@ web_socket.onmessage = async (e) => {
             display_message(data['message'], 'start', data['sender'])
         }
     }
+
+    //change video
+
+    else if (data['action'] === 'change_video'){
+        window.location.href = `/room/${room_code}/${data['video_id']}`
+    }
 }
 
 
 
 function update_participants(data){
+    console.log(data)
     const participant_container = document.getElementById('participant_container')
     participant_container.innerHTML = ''
 
@@ -220,10 +236,11 @@ function update_participants(data){
 
 
 
-function send_message(event){
+async function send_message(event){
     event.preventDefault()
-
     const message = document.getElementById('message_input')
+    const message_value = message.value
+
     web_socket.send(JSON.stringify({
         'action' : 'message',
         'message' : message.value,
@@ -232,10 +249,23 @@ function send_message(event){
 
     display_message(message.value, 'end')
     message.value = ''
+
+    const res = await fetch('/api/messages', {
+        method : 'POST',
+        headers : {
+            'Content-Type' : 'application/json',
+            'X-CSRFToken' : getCSRFToken()
+        },
+        body : JSON.stringify({
+            chat_code : room_code,
+            chat_sender : username,
+            chat_message : message_value
+        })
+    })
 }
 
 
-function display_message(message, position, sender=''){
+function display_message(message, position, sender='You'){
     const message_container = document.getElementById('message_container')
     const new_message_div = document.createElement('div')
     new_message_div.classList.add('w-full', 'flex', 'flex-col')
@@ -246,12 +276,24 @@ function display_message(message, position, sender=''){
                 <h1 class="text-${position} text-sm">${sender.slice(0,5)}</h1>
             </div>
             <div class="w-full flex mt-1 justify-${position}">
-                <div class=" bg-gray-900 rounded-xl px-2 py-3">
-                    <h1 class="text-${position}">${message}</h1>
+                <div class="bg-gray-900  h-auto rounded-xl px-4 py-3 max-w-96">
+                    <h1 class="text-${position} text-white break-words">${message}</h1>
                 </div>
             </div>
         </div>
     `
 
     message_container.appendChild(new_message_div)
+}
+
+
+
+//invite
+function display_modal(id, display=false){
+    const modal = document.getElementById(id)
+    if (display){
+        modal.classList.remove('hidden')
+    }else{
+        modal.classList.add('hidden')
+    }
 }

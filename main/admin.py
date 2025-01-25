@@ -7,4 +7,5 @@ admin.site.register([
     models.UserProfile,
     models.Friend,
     models.Room,
+    models.ChatRoom
 ])

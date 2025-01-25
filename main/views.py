@@ -2,7 +2,7 @@ from pickle import TRUE
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from .API.youtube_api import YoutubeAPI
-from .models import Room, UserProfile
+from .models import Room, UserProfile, ChatRoom
 # Create your views here.
 
 def home(request):
@@ -24,10 +24,10 @@ def home(request):
 
 
 def search_result(request, search):
-    # youtube = YoutubeAPI()
-    # results = youtube.search(search)
-    # return render(request, 'main/views/search.html', { 'results' : results})
-    pass
+    youtube = YoutubeAPI()
+    results = youtube.search(search)
+    return render(request, 'main/views/search.html', { 'results' : results})
+    
 
 
 def room(request, code, video_id=False):
@@ -35,31 +35,14 @@ def room(request, code, video_id=False):
         room = Room.objects.filter(room_code = code)
 
         if room:
-            visitors = room[0].room_visitor
-            user = UserProfile.objects.get(user_auth_credential = request.user)
-
-            is_unique = True
-            for result in visitors['result']:
-                if request.user.username == result['username']:
-                    is_unique = False
-                    break
-            
-            if is_unique:
-                visitors['result'].append({
-                    'username' : request.user.username,
-                    'user_image' : user.user_picture,
-                    'role' : 'visitor'
-                })
-
-            room.update(
-                room_visitor = visitors
-            )
+            chat_room = ChatRoom.objects.filter(chat_room = room[0])
 
             data = {
-                'room' : room, 
+                'room' : room[0], 
                 'video_id' : video_id,
                 'room_code' : code,
                 'visitors' : room[0].room_visitor,
+                'messages' : chat_room
             }
 
             if request.user.username == room[0].room_owner.user_auth_credential.username:
