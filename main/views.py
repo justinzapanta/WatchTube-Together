@@ -1,3 +1,4 @@
+from pickle import TRUE
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from .API.youtube_api import YoutubeAPI
@@ -37,13 +38,18 @@ def room(request, code, video_id=False):
             visitors = room[0].room_visitor
             user = UserProfile.objects.get(user_auth_credential = request.user)
 
-            for index, result in enumerate(visitors['result']):
-                if request.user.username not in result.values():
-                    visitors['result'].append({
-                        'username' : request.user.username,
-                        'user_image' : user.user_picture,
-                        'role' : 'visitor'
-                    })
+            is_unique = True
+            for result in visitors['result']:
+                if request.user.username == result['username']:
+                    is_unique = False
+                    break
+            
+            if is_unique:
+                visitors['result'].append({
+                    'username' : request.user.username,
+                    'user_image' : user.user_picture,
+                    'role' : 'visitor'
+                })
 
             room.update(
                 room_visitor = visitors

@@ -41,6 +41,14 @@ class YoutubePlayer(WebsocketConsumer):
                     'user' : self.user.username
                 }
             )
+        elif data['action'] == 'message':
+            async_to_sync(self.channel_layer.group_send)(
+                self.roon_name,
+                {
+                    'type' : 'send_message',
+                    'data' : data
+                }
+            )
         else:
             async_to_sync(self.channel_layer.group_send)(
                 self.roon_name,
@@ -74,4 +82,14 @@ class YoutubePlayer(WebsocketConsumer):
         self.send(text_data=json.dumps({
             'action' : 'new_visitor',
             'user' : event['user']
+        }))
+    
+
+    def send_message(self, event):
+        info = event['data']
+
+        self.send(text_data=json.dumps({
+            'action' : 'message',
+            'sender' : info['sender'],
+            'message' : info['message']
         }))

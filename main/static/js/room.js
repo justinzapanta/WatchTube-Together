@@ -7,6 +7,7 @@ const getCSRFToken = () => {
 const id = document.getElementById('room').getAttribute('video_id')
 const room_code = document.getElementById('room').getAttribute('room_code')
 const owner = document.getElementById('room').getAttribute('owner')
+const username = document.getElementById('room').getAttribute('user')
 
 
 let player
@@ -190,6 +191,13 @@ web_socket.onmessage = async (e) => {
         console.log(results)
         update_participants(results['result'])
     }
+
+    // message
+    else if (data['action'] == 'message'){
+        if (data['sender'] !== username){
+            display_message(data['message'], 'start', data['sender'])
+        }
+    }
 }
 
 
@@ -208,4 +216,42 @@ function update_participants(data){
         `
         participant_container.appendChild(new_div)
     })
+}
+
+
+
+function send_message(event){
+    event.preventDefault()
+
+    const message = document.getElementById('message_input')
+    web_socket.send(JSON.stringify({
+        'action' : 'message',
+        'message' : message.value,
+        'sender' : username
+    }))
+
+    display_message(message.value, 'end')
+    message.value = ''
+}
+
+
+function display_message(message, position, sender=''){
+    const message_container = document.getElementById('message_container')
+    const new_message_div = document.createElement('div')
+    new_message_div.classList.add('w-full', 'flex', 'flex-col')
+
+    new_message_div.innerHTML = `
+        <div class="w-full flex flex-col">
+            <div class="px-1 w-full">
+                <h1 class="text-${position} text-sm">${sender.slice(0,5)}</h1>
+            </div>
+            <div class="w-full flex mt-1 justify-${position}">
+                <div class=" bg-gray-900 rounded-xl px-2 py-3">
+                    <h1 class="text-${position}">${message}</h1>
+                </div>
+            </div>
+        </div>
+    `
+
+    message_container.appendChild(new_message_div)
 }
