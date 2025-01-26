@@ -213,19 +213,26 @@ web_socket.onmessage = async (e) => {
     else if (data['action'] === 'change_video'){
         window.location.href = `/room/${room_code}/${data['video_id']}`
     }
+
+    //friend_request
+    else if (data['action'] === 'friend_reqeust'){
+        if (data['user'] === username && data['sender'] !== username){
+            friend_reqInfo(data['sender'], data['user']) //user = friend
+        }
+    }
 }
 
 
 
 function update_participants(data){
-    console.log(data)
     const participant_container = document.getElementById('participant_container')
     participant_container.innerHTML = ''
-
     data.forEach(result => {
+        console.log(result)
         const new_div = document.createElement('div')
-        new_div.classList.add('bg-gray-700', 'rounded-full', 'p-2', 'flex', 'items-center', 'space-x-2')
-        
+        new_div.classList.add('bg-gray-700', 'rounded-full', 'hover:cursor-pointer', 'p-2', 'flex', 'items-center', 'space-x-2')
+        new_div.onclick = () => display_modal('view_visitor_modal', 'display', result['username'])
+
         new_div.innerHTML = `
             <img src="${result.user_image}" alt="User 1" class="w-8 h-8 rounded-full">
             <span>${result.role}</span>
@@ -265,6 +272,7 @@ async function send_message(event){
 }
 
 
+
 function display_message(message, position, sender='You'){
     const message_container = document.getElementById('message_container')
     const new_message_div = document.createElement('div')
@@ -289,11 +297,76 @@ function display_message(message, position, sender='You'){
 
 
 //invite
-function display_modal(id, display=false){
+function display_modal(id, display=false, username=false){
+    if (username){
+        display_profile(username)
+    }
+
     const modal = document.getElementById(id)
     if (display){
         modal.classList.remove('hidden')
     }else{
         modal.classList.add('hidden')
     }
+}
+
+
+
+async function display_profile(visitor){
+    const response = await fetch(`/api/user-profile?username=${visitor}`, {
+        method : 'GET',
+        headers : {
+            'Content-Type' : 'application/json',
+        }
+    })
+
+    const response_json = await response.json()
+    const result = response_json.result[0]
+
+    document.getElementById('user_name').textContent = visitor
+    document.getElementById('user_picture').src = result.user_picture
+    document.getElementById('add').onclick = () => add_user(visitor, username)
+    document.getElementById('kick')
+
+    const kick_container = document.getElementById('kick_container')
+    if (owner !== ''){
+        kick_container.classList.remove('hidden')
+    }else{
+        kick_container.classList.add('hidden')
+    }
+}
+
+
+
+function add_user(user, sender){
+    console.log('friend request sent')
+    web_socket.send(JSON.stringify({
+        action : 'friend_request',
+        user : user,
+        sender : sender
+    }))
+}
+
+
+
+function friend_reqInfo(sender, friend){
+    document.getElementById('send_text').textContent = `${sender} sent a friend request`
+    document.getElementById('accept_button').onclick = () => accept_friendReq(friend, sender)
+    display_modal('friend_request_modal', 'display')
+}
+
+
+async function accept_friendReq(friend, sender){
+    display_modal('friend_request_modal')
+    const response = await fetch('/api/friends', {
+        method : 'POST',
+        headers : {
+            'Content-Type' : 'application/json',
+            'X-CSRFToken' : getCSRFToken()
+        },
+        body : JSON.stringify({
+            friend : friend,
+            sender : sender
+        })
+    })
 }

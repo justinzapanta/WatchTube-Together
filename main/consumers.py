@@ -61,6 +61,14 @@ class YoutubePlayer(WebsocketConsumer):
                     'video_id' : data['video_id']
                 }
             )
+        elif data['action'] == 'friend_request':
+            async_to_sync(self.channel_layer.group_send)(
+                self.roon_name,
+                {
+                    'type' : 'friend_request',
+                    'data' : data
+                }
+            )
         else:
             async_to_sync(self.channel_layer.group_send)(
                 self.roon_name,
@@ -71,6 +79,7 @@ class YoutubePlayer(WebsocketConsumer):
             )
 
 
+    #types
     def sync_video(self, event):
         data = event['data']
 
@@ -136,4 +145,14 @@ class YoutubePlayer(WebsocketConsumer):
         self.send(text_data=json.dumps({
             'action' : 'change_video',
             'video_id' : video_id
+        }))
+    
+
+    def friend_request(self, event):
+        data = event['data']
+
+        self.send(text_data=json.dumps({
+            'action' : 'friend_reqeust',
+            'user' : data['user'],
+            'sender' : data['sender']
         }))

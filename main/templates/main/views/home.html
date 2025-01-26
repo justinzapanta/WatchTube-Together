@@ -31,7 +31,7 @@
 
         <div class="w-full md:px-7 lg-px10 pt-14 md:pt-24 flex flex-col relative">
             <!--Hero-->
-            <div class="bg-gray-800 w-full h-72 min-h-72 font-roboto  md:rounded-2xl grid grid-cols-1 md:grid-cols-2">
+            <div class="bg-gray-800 w-full h-72 md:h-96 min-h-72 font-roboto  md:rounded-2xl grid grid-cols-1 md:grid-cols-2">
                 <div class="w-full h-full flex flex-col justify-center px-6 z-30">
                     <h1 class="text-white text-3xl md:text-4xl text-center font-semibold">Watch <span class="">Youtube</span> Together</h1>
 
@@ -46,7 +46,7 @@
                 <!--Image-->
                 <div class="w-full h-full  flex-col justify-center hidden md:flex">
                     <div class="w-full flex justify-center">
-                        <img src="{% static 'img/tv.png' %}" class="h-80 min-h-80 min-w-80" alt="">
+                        <img src="{% static 'img/tv.png' %}" class="h-72 min-h-60 min-w-80" alt="">
                     </div>
                 </div>
             </div>
@@ -78,7 +78,7 @@
 
 
             <!--Join Modal-->
-            <div id="join-modal" class="w-full h-full flex hidden flex-col justify-center absolute top-0 left-0">
+            <div id="join-modal" class="w-full h-full z-50 flex hidden flex-col justify-center absolute top-0 left-0">
                 <div class="w-full flex justify-center">
                     <div class="w-72 md:w-96 font-roboto px-4 py-6 border border-gray-900 shadow-2xl bg-gray-800 shadow-2xl rounded-xl">
                         <h1 class="text-white text-xl">Join Room</h1>

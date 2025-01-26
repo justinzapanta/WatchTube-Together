@@ -1,10 +1,11 @@
 from urllib import response
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .function import generate_code
-from ..models import Room, UserProfile, ChatRoom
-from .serializer import ChatRoomSerializer
+from .function import generate_code, add_friend
+from ..models import Room, UserProfile, ChatRoom, Friend
+from .serializer import ChatRoomSerializer, UserProfileSerializer
 from .youtube_api import YoutubeAPI
+from django.contrib.auth.models import User
 
 @api_view(['POST', 'GET', 'PUT'])
 def room(request):
@@ -110,3 +111,36 @@ def messages(request):
                 message.save()
 
     return Response({'result' : 'error'})
+
+
+
+@api_view(['POST', 'GET', 'update'])
+def user_profile(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':
+            data = request.query_params
+            user = User.objects.get(username = data['username'])
+            user_info = UserProfile.objects.filter(user_auth_credential = user)
+
+            if user_info:
+                return Response({'result' : UserProfileSerializer(user_info, many=True).data})
+    
+    return Response({'result' : 'error'}, status=500)
+
+
+
+@api_view(['POST', 'GET'])
+def friends(request):
+    if request.user.is_authenticated:
+        if request.data:
+            data = request.data
+
+            if request.method == 'POST':
+                print(request.user.username, data)
+                new_friend = add_friend(request.user.username, data['sender']) #for user
+                new_sender = add_friend(data['sender'], request.user.username) #for sender
+
+                if new_friend:
+                    return Response({'result', 'success'}, status=200)
+                
+    return Response({'result' : 'error'}, status=500)
