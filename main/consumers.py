@@ -135,7 +135,8 @@ class YoutubePlayer(WebsocketConsumer):
         self.send(text_data=json.dumps({
             'action' : 'message',
             'sender' : info['sender'],
-            'message' : info['message']
+            'message' : info['message'],
+            'sender_email' : info['sender_email']
         }))
 
 
@@ -154,5 +155,86 @@ class YoutubePlayer(WebsocketConsumer):
         self.send(text_data=json.dumps({
             'action' : 'friend_reqeust',
             'user' : data['user'],
-            'sender' : data['sender']
+            'sender' : data['sender'],
+            'sender_name' : data['sender_name']
         }))
+
+
+
+class HomeWebsocket(WebsocketConsumer):
+    def connect(self):
+        self.room = 'all'
+        self.user = self.scope['user']
+        self.accept()
+
+        async_to_sync(self.channel_layer.group_add)(
+            self.room,
+            self.channel_name
+        )
+
+
+    def disconnect(self, code):
+        async_to_sync(self.channel_layer.group_discard)(
+            self.room,
+            self.channel_name
+        )
+
+        async_to_sync(self.channel_layer.group_send)(
+            self.room,
+            {
+                'type' : 'is_offline',
+                'username' : self.user.username
+            }
+        )
+
+    
+    def receive(self, text_data=None):
+        data = json.loads(text_data)
+
+        if 'status' in data:
+            if data['status'] == 'Online':
+                #create a semder
+                async_to_sync(self.channel_layer.group_send)(
+                    self.room,
+                    {
+                        'type' : 'is_online',
+                        'data' : data
+                    }
+                )
+                pass
+            elif data['status'] == 'Offline':
+                pass
+            
+        elif 'action' == 'invite':
+            pass
+
+
+
+    def is_online(self, event): 
+        data = event['data']
+
+        self.send(text_data=json.dumps({
+            'action' : 'status',
+            'status' : 'Online',
+            'username' : data['username']
+        }))
+
+        user = User.objects.get(username = data['username'])
+        user_profile = UserProfile.objects.filter(user_auth_credential = user).update(
+            user_status = 'Online'            
+        )
+
+
+    def is_offline(self, event):
+        username = event['username']
+
+        self.send(text_data=json.dumps({
+            'action' : 'status',
+            'status' : 'Offline',
+            'username' : username
+        }))
+
+        user = User.objects.get(username = username)
+        user_profile = UserProfile.objects.filter(user_auth_credential = user).update(
+            user_status = 'Offline'            
+        )

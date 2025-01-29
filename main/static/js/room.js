@@ -8,6 +8,8 @@ const id = document.getElementById('room').getAttribute('video_id')
 const room_code = document.getElementById('room').getAttribute('room_code')
 const owner = document.getElementById('room').getAttribute('owner')
 const username = document.getElementById('room').getAttribute('user')
+const user_name = document.getElementById('room').getAttribute('user_name')
+
 
 
 let player
@@ -203,7 +205,7 @@ web_socket.onmessage = async (e) => {
 
     // message
     else if (data['action'] == 'message'){
-        if (data['sender'] !== username){
+        if (data['sender_email'] !== username){
             display_message(data['message'], 'start', data['sender'])
         }
     }
@@ -217,7 +219,7 @@ web_socket.onmessage = async (e) => {
     //friend_request
     else if (data['action'] === 'friend_reqeust'){
         if (data['user'] === username && data['sender'] !== username){
-            friend_reqInfo(data['sender'], data['user']) //user = friend
+            friend_reqInfo(data['sender'], data['user'], data['sender_name']) //user = friend
         }
     }
 }
@@ -251,7 +253,8 @@ async function send_message(event){
     web_socket.send(JSON.stringify({
         'action' : 'message',
         'message' : message.value,
-        'sender' : username
+        'sender' : user_name,
+        'sender_email' : username
     }))
 
     display_message(message.value, 'end')
@@ -265,7 +268,7 @@ async function send_message(event){
         },
         body : JSON.stringify({
             chat_code : room_code,
-            chat_sender : username,
+            chat_sender : user_name,
             chat_message : message_value
         })
     })
@@ -281,7 +284,7 @@ function display_message(message, position, sender='You'){
     new_message_div.innerHTML = `
         <div class="w-full flex flex-col">
             <div class="px-1 w-full">
-                <h1 class="text-${position} text-sm">${sender.slice(0,5)}</h1>
+                <h1 class="text-${position} text-sm">${sender}</h1>
             </div>
             <div class="w-full flex mt-1 justify-${position}">
                 <div class="bg-gray-900  h-auto rounded-xl px-4 py-3 max-w-96">
@@ -343,20 +346,21 @@ function add_user(user, sender){
     web_socket.send(JSON.stringify({
         action : 'friend_request',
         user : user,
-        sender : sender
+        sender : sender,
+        sender_name : user_name
     }))
 }
 
 
 
-function friend_reqInfo(sender, friend){
+function friend_reqInfo(sender, friend, sender_name){
     document.getElementById('send_text').textContent = `${sender} sent a friend request`
-    document.getElementById('accept_button').onclick = () => accept_friendReq(friend, sender)
+    document.getElementById('accept_button').onclick = () => accept_friendReq(friend, sender, sender_name)
     display_modal('friend_request_modal', 'display')
 }
 
 
-async function accept_friendReq(friend, sender){
+async function accept_friendReq(friend, sender, sender_name){
     display_modal('friend_request_modal')
     const response = await fetch('/api/friends', {
         method : 'POST',
@@ -366,7 +370,8 @@ async function accept_friendReq(friend, sender){
         },
         body : JSON.stringify({
             friend : friend,
-            sender : sender
+            sender : sender,
+            sender_name : sender_name
         })
     })
 }

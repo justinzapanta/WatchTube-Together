@@ -8,24 +8,35 @@
             <!--Friends container-->
             <div class="flex flex-col mt-6 pl-2 gap-y-8">
                 <!--Friend Card-->
-                <div class="w-full flex gap-x-4">
-                    <!--Friend Image-->
-                    <div class="w-11 h-11 rounded-full bg-white"></div>
+                {% for friend in friends %}
+                    <div class="w-full flex gap-x-4">
+                        <!--Friend Image-->
+                        <div class="w-11 h-11 rounded-full bg-white">
+                            <img class="w-11 h-11 rounded-full" src="{{ friend.friend_info.user_picture }}" alt="">
+                        </div>
 
-                    
-                    <div class="flex flex-col font-roboto text-white">
-                        <!--Friend name-->
-                        <h1>Justin Zapanta</h1>
                         
-                        <!--Status-->
-                        <div class="flex gap-x-1">
-                            <div class="my-auto">
-                                <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                        <div class="flex flex-col font-roboto text-white">
+                            <!--Friend name-->
+                            <h1 class="">{{ friend.friend_name }}</h1>
+                            
+                            <!--Status-->
+                            <div class="flex gap-x-1">
+                                {% if friend.friend_info.user_status == 'Online' %}
+                                    <div class="my-auto">
+                                        <div id="{{friend.friend_info.user_auth_credential.username}}-icon" class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                                    </div>
+                                    <h3 id="{{friend.friend_info.user_auth_credential.username}}-status" class="status text-sm text-emerald-500">{{friend.friend_info.user_status}}</h3>
+                                {% else %}
+                                    <div class="my-auto">
+                                        <div id="{{friend.friend_info.user_auth_credential.username}}-icon" class="w-3 h-3 rounded-full bg-red-500"></div>
+                                    </div>
+                                    <h3 id="{{friend.friend_info.user_auth_credential.username}}-status" class="status text-sm text-red-500">{{friend.friend_info.user_status}}</h3>
+                                {% endif %}
                             </div>
-                            <h3 class="text-sm text-emerald-500">Online</h3>
                         </div>
                     </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
 
@@ -38,7 +49,13 @@
                     <div class="flex justify-center mt-8">
                         <div class="flex gap-x-6">
                             <button onclick="display_modal('join-modal', 'true')" class=" text-lg font-semibold px-8 py-2.5 rounded-xl bg-white hover:bg-gray-200">Join</button>
-                            <button onclick="create_room()" class="text-white text-lg font-semibold px-8 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700">Create</button>
+                            {% if request.user.is_authenticated %}
+                                <button onclick="create_room()" class="text-white text-lg font-semibold px-8 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700">Create</button>
+                            {% else %}
+                                <a href="{% url 'sign-in' %}">
+                                    <button class="text-white text-lg font-semibold px-8 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700">Create</button>
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

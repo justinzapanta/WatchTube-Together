@@ -12,7 +12,7 @@ def generate_code():
 
 
 
-def add_friend(username, sender_username):
+def add_friend(username, sender_username, name):
     user = User.objects.filter(username = username)
     sender = User.objects.filter(username = sender_username)
 
@@ -24,10 +24,10 @@ def add_friend(username, sender_username):
         if not in_friends:
             new_friend = Friend(
                 host = user[0],
-                friend_info = sender_profile
+                friend_info = sender_profile,
+                friend_name = name
             )
             new_friend.save()
 
             return new_friend
         return False
-    

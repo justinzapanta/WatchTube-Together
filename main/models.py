@@ -31,4 +31,5 @@ class ChatRoom(models.Model):
 class Friend(models.Model):
     friend_uuid = models.UUIDField(default=uuid.uuid4, primary_key=True, null=False, unique=True, editable=False )
     friend_info = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    friend_name = models.CharField(max_length=250)
     host = models.ForeignKey(User, on_delete=models.CASCADE)

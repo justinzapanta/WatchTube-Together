@@ -2,15 +2,18 @@ from pickle import TRUE
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from .API.youtube_api import YoutubeAPI
-from .models import Room, UserProfile, ChatRoom
+from .models import Room, UserProfile, ChatRoom, Friend
 # Create your views here.
 
 def home(request):
     data = {}
 
     if request.user.is_authenticated:
+        friends = Friend.objects.filter(host=request.user)
         profile = UserProfile.objects.get(user_auth_credential = request.user)
         data['profile_picture'] = profile.user_picture
+        data['friends'] = friends
+        data['username'] = request.user.username
         
     if request.method == 'POST':
         if request.POST['search'] != '':
@@ -42,7 +45,8 @@ def room(request, code, video_id=False):
                 'video_id' : video_id,
                 'room_code' : code,
                 'visitors' : room[0].room_visitor,
-                'messages' : chat_room
+                'messages' : chat_room,
+                'user_name' : request.user.first_name
             }
 
             if request.user.username == room[0].room_owner.user_auth_credential.username:

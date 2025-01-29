@@ -137,8 +137,8 @@ def friends(request):
 
             if request.method == 'POST':
                 print(request.user.username, data)
-                new_friend = add_friend(request.user.username, data['sender']) #for user
-                new_sender = add_friend(data['sender'], request.user.username) #for sender
+                new_friend = add_friend(request.user.username, data['sender'], data['sender_name']) #for user
+                new_sender = add_friend(data['sender'], request.user.username, request.user.first_name) #for sender
 
                 if new_friend:
                     return Response({'result', 'success'}, status=200)
