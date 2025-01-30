@@ -167,8 +167,13 @@
     <!--View Visitor modal-->
     <div id="view_visitor_modal" class="absolute top-0 left-0 z-50 flex hidden flex-col w-full h-full justify-center">
         <div class="w-full flex justify-center">
-            <div class="w-80 md:w-96 h-36 border flex flex-col p-4 relative border-gray-700 rounded-3xl bg-gray-900">
-                <a onclick="display_modal('view_visitor_modal')" class="absolute top-2.5 right-4 font-semibold hover:cursor-pointer">X</a>
+            <div class="w-80 md:w-96 border flex flex-col p-4 relative border-gray-700 rounded-3xl bg-gray-900">
+                <div class="w-full flex justify-end gap-x-3">
+                    <div class="my-auto">
+                        <i id="add" class="fas fa-user-plus text-sm hover:cursor-pointer hover:text-emerald-500"></i>
+                    </div>
+                    <a onclick="display_modal('view_visitor_modal')" class="font-semibold hover:cursor-pointer">X</a>
+                </div>
 
                 <div class="flex gap-x-3">
                     <div class="w-[3.5rem] h-[3.5rem] rounded-full">
@@ -177,13 +182,6 @@
                     <div class="h-auto my-auto">
                         <h1 id="user_name">Name</h1>
                     </div>
-                </div>
-
-                <div class="w-full mt-4 flex justify-end gap-x-5 px-2">
-                    <div id="kick_container">
-                        <i id="kick" class="fas fa-person-running text-2xl hover:cursor-pointer hover:text-red-500"></i>
-                    </div>
-                    <i id="add" class="fas fa-user-plus text-2xl hover:cursor-pointer hover:text-emerald-500"></i>
                 </div>
             </div>
         </div>
@@ -224,8 +222,14 @@
                     </div>
 
                 </div>
-                
+                <h1 id="friend_notif" class="text-center text-white text-lg">All of your friends are offline</h1>
             </div>
+        </div>
+    </div>
+
+    <div id="notif_modal" class="fixed bottom-0 w-full flex justify-center z-50 pb-4 hidden">
+        <div class="px-4 py-2 font-bold bg-green-500 rounded-2xl">
+            <h1 id="success_notif">Invitation sent successfully</h1>
         </div>
     </div>
 

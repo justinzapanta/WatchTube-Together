@@ -328,14 +328,6 @@ async function display_profile(visitor){
     document.getElementById('user_name').textContent = visitor
     document.getElementById('user_picture').src = result.user_picture
     document.getElementById('add').onclick = () => add_user(visitor, username)
-    document.getElementById('kick')
-
-    const kick_container = document.getElementById('kick_container')
-    if (owner !== ''){
-        kick_container.classList.remove('hidden')
-    }else{
-        kick_container.classList.add('hidden')
-    }
 }
 
 
@@ -349,7 +341,8 @@ function add_user(user, sender){
         sender_name : user_name
     }))
 
-
+    display_modal('view_visitor_modal')
+    success_notif('Friend request has been sent')
 }
 
 
@@ -384,34 +377,54 @@ async function display_friends(id, display=false){
         headers : {'Content-Type' : 'application/json'}
     })
 
+    const friend_notif = document.getElementById('friend_notif')
     const res_json = await response.json()
     const result = res_json['result']
     const friend_container = document.getElementById('friend_container')
     friend_container.innerHTML = ''
 
-    result.forEach(info => {
-        const new_card = document.createElement('div')
-        new_card.classList.add('flex', 'flex-col', 'w-fit', 'hover:cursor-pointer')
-        new_card.onclick = () => send_invitation(info.friend_info.user_auth_credential.username)
-        new_card.innerHTML = `
-            <div class="w-14 h-14 bg-white rounded-full">
-                <img src="${info.friend_info.user_picture}" alt="" class="w-14 h-14 rounded-full">
-            </div>
-            <h1 class="mt-1 text-center">${info.friend_name}</h1>
-        `
-
-        friend_container.appendChild(new_card)
-    })
+    if (Object.keys(result).length !== 0){
+        result.forEach(info => {
+            friend_notif.classList.add('hidden')
+            const new_card = document.createElement('div')
+            new_card.classList.add('flex', 'flex-col', 'w-fit', 'hover:cursor-pointer')
+            new_card.onclick = () => send_invitation(info.friend_info.user_auth_credential.username)
+            new_card.innerHTML = `
+                <div class="w-14 h-14 bg-white rounded-full">
+                    <img src="${info.friend_info.user_picture}" alt="" class="w-14 h-14 rounded-full">
+                </div>
+                <h1 class="mt-1 text-center">${info.friend_name}</h1>
+            `
+    
+            friend_container.appendChild(new_card)
+        })
+    }else{
+        friend_notif.classList.remove('hidden')
+    }
 
     display_modal(id, display)
 }
 
 
 function send_invitation(username){
-    console.log(window.location.href)
+    display_modal('invite_friend_modal')
     websocket.send(JSON.stringify({
         action : 'invite',
         username : username,
         link : window.location.href
     }))
+
+    success_notif('Invitation sent successfully')
+}
+
+
+function success_notif(text){
+    const notif = document.getElementById('success_notif')
+    const notif_modal = document.getElementById('notif_modal')
+
+    notif.textContent = text
+    notif_modal.classList.remove('hidden')
+    setTimeout(() => {
+        notif_modal.classList.add('hidden')
+      }, 2000); 
 }
