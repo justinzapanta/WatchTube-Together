@@ -1,8 +1,7 @@
 const getCSRFToken = () => {
     const meta = document.querySelector('meta[name="csrf-token"]');
     return meta ? meta.getAttribute('content') : '';
-}
-
+};
 
 const id = document.getElementById('room').getAttribute('video_id')
 const room_code = document.getElementById('room').getAttribute('room_code')
@@ -349,6 +348,8 @@ function add_user(user, sender){
         sender : sender,
         sender_name : user_name
     }))
+
+
 }
 
 
@@ -374,4 +375,43 @@ async function accept_friendReq(friend, sender, sender_name){
             sender_name : sender_name
         })
     })
+}
+
+
+async function display_friends(id, display=false){
+    const response = await fetch('/api/friends?filter=Online', {
+        method : 'GET',
+        headers : {'Content-Type' : 'application/json'}
+    })
+
+    const res_json = await response.json()
+    const result = res_json['result']
+    const friend_container = document.getElementById('friend_container')
+    friend_container.innerHTML = ''
+
+    result.forEach(info => {
+        const new_card = document.createElement('div')
+        new_card.classList.add('flex', 'flex-col', 'w-fit', 'hover:cursor-pointer')
+        new_card.onclick = () => send_invitation(info.friend_info.user_auth_credential.username)
+        new_card.innerHTML = `
+            <div class="w-14 h-14 bg-white rounded-full">
+                <img src="${info.friend_info.user_picture}" alt="" class="w-14 h-14 rounded-full">
+            </div>
+            <h1 class="mt-1 text-center">${info.friend_name}</h1>
+        `
+
+        friend_container.appendChild(new_card)
+    })
+
+    display_modal(id, display)
+}
+
+
+function send_invitation(username){
+    console.log(window.location.href)
+    websocket.send(JSON.stringify({
+        action : 'invite',
+        username : username,
+        link : window.location.href
+    }))
 }

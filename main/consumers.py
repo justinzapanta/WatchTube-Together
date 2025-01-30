@@ -69,6 +69,14 @@ class YoutubePlayer(WebsocketConsumer):
                     'data' : data
                 }
             )
+        elif data['action'] == 'kick':
+            async_to_sync(self.channel_layer.group_send)(
+                self.roon_name,
+                {
+                    'type' : 'kick',
+                    'data' : data
+                }
+            )
         else:
             async_to_sync(self.channel_layer.group_send)(
                 self.roon_name,
@@ -159,6 +167,10 @@ class YoutubePlayer(WebsocketConsumer):
             'sender_name' : data['sender_name']
         }))
 
+    
+    def kick(self, event):
+        data = event['data']
+
 
 
 class HomeWebsocket(WebsocketConsumer):
@@ -201,12 +213,16 @@ class HomeWebsocket(WebsocketConsumer):
                         'data' : data
                     }
                 )
-                pass
-            elif data['status'] == 'Offline':
-                pass
+
             
-        elif 'action' == 'invite':
-            pass
+        elif data['action'] == 'invite':
+            async_to_sync(self.channel_layer.group_send)(
+                self.room,
+                {
+                    'type' : 'send_invitation',
+                    'data' : data
+                }
+            )
 
 
 
@@ -238,3 +254,15 @@ class HomeWebsocket(WebsocketConsumer):
         user_profile = UserProfile.objects.filter(user_auth_credential = user).update(
             user_status = 'Offline'            
         )
+
+    
+    def send_invitation(self, event):
+        data = event['data']
+        print('prevent')
+        self.send(text_data=json.dumps({
+            'action' : 'invitation',
+            'username' : data['username'],
+            'link' : data['link']
+        }))
+
+    

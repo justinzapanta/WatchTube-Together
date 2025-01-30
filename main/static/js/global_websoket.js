@@ -27,6 +27,8 @@ function change_status_color(username, status, color, remove_color){
 
 
 websocket.onmessage = (event) => {
+    const meta = document.querySelector('meta[name="is_online"]');
+    const content = meta.getAttribute('content')
     const data = JSON.parse(event.data)
 
     if (data['action'] === 'status'){
@@ -44,5 +46,17 @@ websocket.onmessage = (event) => {
                 status_text.textContent = 'Online'
             }catch{}
         }
+    }else if(data['action'] === 'invitation'){
+        console.log(data['link'])
+        try{
+            if (data['username'] === content){
+                display_modal('invitation_modal', 'display')
+
+                const invitation_link = document.getElementById('invitation_link')
+                invitation_link.href = data['link']
+            }
+        }catch{}
     }
-} 
+}
+
+

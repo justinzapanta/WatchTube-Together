@@ -18,3 +18,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.UserProfile
         fields = '__all__'
+
+
+
+class FriendSerializer(serializers.ModelSerializer):
+    friend_info = UserProfileSerializer()
+    class Meta:
+        model = models.Friend
+        fields = '__all__'

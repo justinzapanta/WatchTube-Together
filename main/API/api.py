@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .function import generate_code, add_friend
 from ..models import Room, UserProfile, ChatRoom, Friend
-from .serializer import ChatRoomSerializer, UserProfileSerializer
+from .serializer import ChatRoomSerializer, UserProfileSerializer, FriendSerializer
 from .youtube_api import YoutubeAPI
 from django.contrib.auth.models import User
 
@@ -132,10 +132,16 @@ def user_profile(request):
 @api_view(['POST', 'GET'])
 def friends(request):
     if request.user.is_authenticated:
-        if request.data:
-            data = request.data
+        if request.method == 'GET':
+            if request.query_params:
+                params = request.query_params
+                friends = Friend.objects.filter(host = request.user, friend_info__user_status = params['filter'] )
+                return Response({'result' : FriendSerializer(friends, many=True).data}, status=200)
 
-            if request.method == 'POST':
+        elif request.method == 'POST':
+            if request.data:
+                data = request.data
+
                 print(request.user.username, data)
                 new_friend = add_friend(request.user.username, data['sender'], data['sender_name']) #for user
                 new_sender = add_friend(data['sender'], request.user.username, request.user.first_name) #for sender
