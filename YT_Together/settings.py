@@ -94,7 +94,7 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'watch-together', #YT-Together
+        'NAME': os.getenv('POSTGRESQL_NAME'), #YT-Together
         'USER' : os.getenv('POSTGRESQL_USER'),
         'PASSWORD' : os.getenv('POSTGRESQL_PASSWORD'),
         'HOST' : os.getenv('POSTGRESQL_HOST'),
