@@ -8,6 +8,7 @@ urlpatterns= [
     path('room/<str:code>/<str:video_id>/', views.room, name='room'),
     path('sign-in/', views.sign_in, name='sign-in'),
     path('sign-up/', views.sign_up, name='sign-up'),
+    path('sign-out/', views.sign_out, name='sign-out'),
 
     #API
     path('api/room', api.room, name='api-room'),

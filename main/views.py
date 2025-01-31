@@ -1,8 +1,10 @@
 from pickle import TRUE
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from .API.youtube_api import YoutubeAPI
 from .models import Room, UserProfile, ChatRoom, Friend
+from django.contrib.auth.models import User
+import json
 # Create your views here.
 
 def home(request):
@@ -59,16 +61,61 @@ def room(request, code, video_id=False):
 
 
 def sign_in(request):
-    if request.user.is_authenticated:
-        return redirect('home')
-    else:
+    data = {}
+    if not request.user.is_authenticated:
         if request.method == 'POST':
             user = authenticate(username = request.POST['username'], password = request.POST['password'])
             if user:
                 login(request, user)
-                return redirect('sign-in')
-        return render(request, 'main/views/login.html')
+                return redirect('home')
+            else:
+                data['notif'] = 'Invalid email or password'
+        return render(request, 'main/views/login.html', data)
+    return redirect('home')
+
 
 
 def sign_up(request):
-    return render(request, 'main/views/register.html')
+    if not request.user.is_authenticated:
+        data = {}
+        if request.method == 'POST':
+            email_exist = User.objects.filter(username = request.POST['email'])
+            
+            if not email_exist:
+                new_user = User.objects.create_user(
+                    username = request.POST['email'],
+                    password = request.POST['password'],
+                    first_name = request.POST['username']
+                )
+                
+                new_userProfile = UserProfile(
+                    user_auth_credential = new_user,
+                    user_picture = 'https://cdn0.iconfinder.com/data/icons/people-57/24/user-circle-1024.png',
+                    user_status = 'Online'
+                )
+                new_userProfile.save()
+
+                new_userRoom = Room(
+                    room_code = '12349^#$@!',
+                    room_video_id = '1234',
+                    room_owner = new_userProfile,
+                    room_visitor = json.dumps({"" : ""})
+                )
+                new_userRoom.save()
+
+                login(request, new_user)
+                return redirect('home')
+            
+            data['notif'] = 'This email is taken'
+        return render(request, 'main/views/register.html', data)
+    return redirect('home')
+
+
+def sign_out(request):
+    user = UserProfile.objects.filter(user_auth_credential = request.user)
+    user.update(
+        user_status = 'Offline'
+    )
+
+    logout(request)
+    return redirect('sign-in')

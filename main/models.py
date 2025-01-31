@@ -18,7 +18,6 @@ class Room(models.Model):
     room_code = models.CharField(max_length=40, null=True, default='')
     room_video_id = models.CharField(max_length=250, null=True, default='')
     room_owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    room_banned = models.JSONField(null=True)
     room_visitor = models.JSONField(null=True)
 
 
