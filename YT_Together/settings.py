@@ -83,9 +83,13 @@ ASGI_APPLICATION = "YT_Together.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.getenv("REDIS_HOST")],
+        },
+    },
 }
+
 
 
 # Database
@@ -94,11 +98,11 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'watch-together', #YT-Together
+        'NAME': os.getenv('POSTGRESQL_NAME'), #YT-Together
         'USER' : os.getenv('POSTGRESQL_USER'),
         'PASSWORD' : os.getenv('POSTGRESQL_PASSWORD'),
         'HOST' : os.getenv('POSTGRESQL_HOST'),
-        'PORT' : 5432
+        'PORT' : os.getenv('POSTGRESQL_PORT')
     }
 }
 

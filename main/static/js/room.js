@@ -145,6 +145,7 @@ web_socket.onopen = function() {
 
 web_socket.onclose = function() {
     console.log("WebSocket disconnected.");
+    window.location.reload()
 };
 
 
@@ -232,7 +233,7 @@ function update_participants(data){
         console.log(result)
         const new_div = document.createElement('div')
         new_div.classList.add('bg-gray-700', 'rounded-full', 'hover:cursor-pointer', 'p-2', 'flex', 'items-center', 'space-x-2')
-        new_div.onclick = () => display_modal('view_visitor_modal', 'display', result['username'])
+        new_div.onclick = () => display_profile('view_visitor_modal', 'display', result['username'])
 
         new_div.innerHTML = `
             <img src="${result.user_image}" alt="User 1" class="w-8 h-8 rounded-full">
@@ -299,11 +300,7 @@ function display_message(message, position, sender='You'){
 
 
 //invite
-function display_modal(id, display=false, username=false){
-    if (username){
-        display_profile(username)
-    }
-
+function display_modal(id, display=false){
     const modal = document.getElementById(id)
     if (display){
         modal.classList.remove('hidden')
@@ -314,7 +311,7 @@ function display_modal(id, display=false, username=false){
 
 
 
-async function display_profile(visitor){
+async function display_profile(id, display, visitor){
     const response = await fetch(`/api/user-profile?username=${visitor}`, {
         method : 'GET',
         headers : {
@@ -328,6 +325,7 @@ async function display_profile(visitor){
     document.getElementById('user_name').textContent = visitor
     document.getElementById('user_picture').src = result.user_picture
     document.getElementById('add').onclick = () => add_user(visitor, username)
+    display_modal(id, display)
 }
 
 

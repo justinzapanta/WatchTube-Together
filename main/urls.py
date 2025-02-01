@@ -18,5 +18,5 @@ urlpatterns= [
     path('api/user-profile', api.user_profile, name='api-user_profile'),
     path('api/friends', api.friends, name='api-friend'),
 
-    path('<str:search>/', views.search_result, name='search'),
+    # path('<str:search>/', views.search_result, name='search'),
 ]
