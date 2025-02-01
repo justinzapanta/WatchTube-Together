@@ -39,7 +39,7 @@ def room(request):
                         room_visitor = {'result' : [{
                             'username' : request.user.username,
                             'user_image' : user.user_picture,
-                            'role' : 'owner'
+                            'role' : 'host'
                         }]},
                     )
 
