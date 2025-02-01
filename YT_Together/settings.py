@@ -90,6 +90,10 @@ CHANNEL_LAYERS = {
     },
 }
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://watchtube-together.onrender.com"
+]
+
 
 
 # Database
