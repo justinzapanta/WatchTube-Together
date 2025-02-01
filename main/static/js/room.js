@@ -322,6 +322,7 @@ async function display_profile(id, display, visitor){
     const response_json = await response.json()
     const result = response_json.result[0]
 
+    console.log(result)
     document.getElementById('user_name').textContent = visitor
     document.getElementById('user_picture').src = result.user_picture
     document.getElementById('add').onclick = () => add_user(visitor, username)
