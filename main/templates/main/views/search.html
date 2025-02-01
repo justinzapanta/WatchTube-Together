@@ -11,21 +11,39 @@
             <!--Youtube results-->
             <div class="w-full flex mt-6 px-2 md:px-0 md:pl-4 gap-y-5 md:gap-y-7 flex-col">
                 {% if results %}
-                    {% for result in results %}
-                        <div class="w-full flex flex-col md:flex-row md:gap-x-6">
-                            <a onclick="create_room('{{result.id}}')" class="hover:cursor-pointer md:min-w-96 md:min-h-52 rounded-lg">
-                                <img class="object-cover md:w-96 md:h-52 rounded-lg" src="{{result.image}}" alt="">
-                            </a>
+                    {% if request.user.is_authenticated %}
+                        {% for result in results %}
+                            <div class="w-full flex flex-col md:flex-row md:gap-x-6">
+                                <a onclick="create_room('{{result.id}}')" class="hover:cursor-pointer md:min-w-96 md:min-h-52 rounded-lg">
+                                    <img class="object-cover md:w-96 md:h-52 rounded-lg" src="{{result.image}}" alt="">
+                                </a>
 
-                            <div class="flex flex-col md:w-[32rem] py-2 md:py-4 gap-y-2">
-                                <div>
-                                    <h1 class="font-roboto font-semibold text-white">{{result.title}}</h1>
-                                    <h4 class="font-roboto text-sm text-white">{{result.view_count}} views</h4>
+                                <div class="flex flex-col md:w-[32rem] py-2 md:py-4 gap-y-2">
+                                    <div>
+                                        <a onclick="create_room('{{result.id}}')" class="font-roboto font-semibold text-white">{{result.title}}</a>
+                                        <h4 class="font-roboto text-sm text-white">{{result.view_count}} views</h4>
+                                    </div>
+                                    <h3 class="font-roboto font-semibold text-sm text-white">{{result.channel_title}}</h3>
                                 </div>
-                                <h3 class="font-roboto font-semibold text-sm text-white">{{result.channel_title}}</h3>
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                        {% for result in results %}
+                            <div class="w-full flex flex-col md:flex-row md:gap-x-6">
+                                <a href="{% url 'sign-in' %}" class="hover:cursor-pointer md:min-w-96 md:min-h-52 rounded-lg">
+                                    <img class="object-cover md:w-96 md:h-52 rounded-lg" src="{{result.image}}" alt="">
+                                </a>
+
+                                <div class="flex flex-col md:w-[32rem] py-2 md:py-4 gap-y-2">
+                                    <div>
+                                        <a href="{% url 'sign-in' %}" class="font-roboto font-semibold text-white">{{result.title}}</a>
+                                        <h4 class="font-roboto text-sm text-white">{{result.view_count}} views</h4>
+                                    </div>
+                                    <h3 class="font-roboto font-semibold text-sm text-white">{{result.channel_title}}</h3>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
