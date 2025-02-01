@@ -36,7 +36,7 @@ function onYouTubePlayerAPIReady() {
 }
 
 onYouTubePlayerAPIReady()
-let url = `ws://${window.location.host}/ws/room/${room_code}/`
+let url = `wss://${window.location.host}/ws/room/${room_code}/`
 const web_socket = new WebSocket(url)
 
 

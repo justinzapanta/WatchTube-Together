@@ -1,4 +1,4 @@
-const websocket = new WebSocket(`ws://${window.location.host}/ws/global/`)
+const websocket = new WebSocket(`wss://${window.location.host}/ws/global/`)
 
 websocket.onopen = () => {
     const meta = document.querySelector('meta[name="is_online"]');
